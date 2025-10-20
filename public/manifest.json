@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MasterChef IA",
+  "name": "MasterChef IA - Gerador de Receitas com IA",
+  "description": "Transforme seus ingredientes em receitas incríveis com inteligência artificial",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,18 +9,28 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "web-app-manifest-192x192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "web-app-manifest-512x512.png",
+      "type": "image/png", 
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#f97316",
+  "background_color": "#7c3aed",
+  "orientation": "portrait",
+  "categories": ["food", "lifestyle", "productivity"]
 }
