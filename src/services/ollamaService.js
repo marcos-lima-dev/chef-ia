@@ -404,12 +404,12 @@ export const testConnection = async () => {
         })
       });
       
-      const isOk = response.ok;
-      console.log('🔗 Teste Netlify Function:', isOk ? '✅ OK' : '❌ Falhou');
-      return isOk;
+      // ✅ CORREÇÃO: Removida variável intermediária não utilizada
+      console.log('🔗 Teste Netlify Function:', response.ok ? '✅ OK' : '❌ Falhou');
+      return response.ok;
     } else {
-      // Testar proxy local
-      const response = await axios.get('http://localhost:3001/health', { 
+      // Testar proxy local - ✅ CORREÇÃO: Removida variável não utilizada
+      await axios.get('http://localhost:3001/health', { 
         timeout: 5000 
       });
       
