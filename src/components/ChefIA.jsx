@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChefHat, Sparkles, Clock, Users, RefreshCw, Share2, Loader2 } from 'lucide-react';
-import { generateRecipeFromOllama } from '../services/ollamaService'; // Importe o serviço
+import { generateRecipeFromOllama } from '../services/ollamaService';
 
 const ChefIA = () => {
   const [ingredients, setIngredients] = useState('');
@@ -51,56 +51,50 @@ const ChefIA = () => {
   };
 
   const generateRecipe = async () => {
-  if (!ingredients.trim()) {
-    setError('Por favor, digite alguns ingredientes!');
-    return;
-  }
-
-  setError('');
-  setLoading(true);
-  setRecipe(null);
-  setPhase(0);
-
-  try {
-    // Animação de fases
-    for (let i = 0; i < phases.length; i++) {
-      setPhase(i);
-      await sleep(phases[i].duration);
+    if (!ingredients.trim()) {
+      setError('Por favor, digite alguns ingredientes!');
+      return;
     }
 
-    // Slot machine
-    await runSlotMachine();
+    setError('');
+    setLoading(true);
+    setRecipe(null);
+    setPhase(0);
 
-    // Chamada à API
-    console.log('🔄 Gerando receita com ingredientes:', ingredients);
-    
-    const generatedRecipe = await generateRecipeFromOllama(ingredients, preferences);
-    
-    console.log('✅ Receita gerada:', generatedRecipe);
-
-    setRecipe(generatedRecipe);
-    setLoading(false);
-    await typeEffect(generatedRecipe.nome);
-    
-  } catch (error) {
-    console.error('❌ Erro ao gerar receita:', error);
-    
-    // ⚡ NOVO: Verificar se é recusa do chef
-    if (error.isChefRefusal) {
-      // Montar mensagem de erro formatada
-      let errorMessage = error.message;
-      if (error.suggestion) {
-        errorMessage += `\n\n💡 Sugestão: ${error.suggestion}`;
+    try {
+      for (let i = 0; i < phases.length; i++) {
+        setPhase(i);
+        await sleep(phases[i].duration);
       }
-      setError(errorMessage);
-    } else {
-      // Erro técnico normal
-      setError(error.message || 'Erro ao gerar receita. Tente novamente.');
+
+      await runSlotMachine();
+
+      console.log('🔄 Gerando receita com ingredientes:', ingredients);
+      
+      const generatedRecipe = await generateRecipeFromOllama(ingredients, preferences);
+      
+      console.log('✅ Receita gerada:', generatedRecipe);
+
+      setRecipe(generatedRecipe);
+      setLoading(false);
+      await typeEffect(generatedRecipe.nome);
+      
+    } catch (error) {
+      console.error('❌ Erro ao gerar receita:', error);
+      
+      if (error.isChefRefusal) {
+        let errorMessage = error.message;
+        if (error.suggestion) {
+          errorMessage += `\n\n💡 Sugestão: ${error.suggestion}`;
+        }
+        setError(errorMessage);
+      } else {
+        setError(error.message || 'Erro ao gerar receita. Tente novamente.');
+      }
+      
+      setLoading(false);
     }
-    
-    setLoading(false);
-  }
-};
+  };
 
   const resetRecipe = () => {
     setRecipe(null);
@@ -112,9 +106,52 @@ const ChefIA = () => {
 
   const shareRecipe = () => {
     if (recipe) {
-      const text = `🍳 ${recipe.nome} ${recipe.emoji}\n⏱️ Tempo: ${recipe.tempoPreparo}\n👥 Rende: ${recipe.rendimento}\n📊 Dificuldade: ${recipe.dificuldade}\n\n🛒 Ingredientes:\n${recipe.ingredientes.map(ing => `• ${ing.item}: ${ing.quantidade}`).join('\n')}\n\n👨‍🍳 Modo de Preparo:\n${recipe.modoPreparo.map((step, i) => `${i + 1}. ${step}`).join('\n')}\n\n💡 ${recipe.dicas}\n\nCriado pelo Chef IA 🧑‍🍳`;
-      navigator.clipboard.writeText(text);
-      alert('Receita copiada para a área de transferência! 📋');
+      const text = `🍳 ${recipe.nome} ${recipe.emoji}\n⏱️ Tempo: ${recipe.tempoPreparo}\n👥 Rende: ${recipe.rendimento}\n📊 Dificuldade: ${recipe.dificuldade}\n\nCriado pelo Chef IA 🧑‍🍳`;
+      const url = window.location.href;
+      
+      const shareOptions = [
+        {
+          name: 'WhatsApp',
+          url: `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`
+        },
+        {
+          name: 'LinkedIn', 
+          url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+        },
+        {
+          name: 'Facebook',
+          url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+        },
+        {
+          name: 'Instagram',
+          action: 'copy'
+        },
+        {
+          name: 'X (Twitter)',
+          url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+        },
+        {
+          name: 'Copiar Link',
+          action: 'copy'
+        }
+      ];
+
+      const platform = prompt(
+        `Compartilhar receita:\n\n${shareOptions.map((opt, i) => `${i + 1}. ${opt.name}`).join('\n')}\n\nDigite o número da opção:`
+      );
+
+      const choice = parseInt(platform) - 1;
+      
+      if (choice >= 0 && choice < shareOptions.length) {
+        const option = shareOptions[choice];
+        
+        if (option.url) {
+          window.open(option.url, '_blank', 'width=600,height=400');
+        } else if (option.action === 'copy') {
+          navigator.clipboard.writeText(option.name === 'Instagram' ? text : url);
+          alert(`${option.name === 'Instagram' ? 'Texto da receita' : 'Link'} copiado! 📋`);
+        }
+      }
     }
   };
 
@@ -147,44 +184,44 @@ const ChefIA = () => {
               </div>
 
               {error && (
-  <div className={`border-l-4 p-4 rounded-lg shadow-md ${
-    error.includes('fome') || 
-    error.includes('Michelin') || 
-    error.includes('confundiu') ||
-    error.includes('oficina') ||
-    error.includes('técnico')
-      ? 'bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-500'
-      : 'bg-red-50 border-red-500'
-  }`}>
-    <div className="flex items-start gap-3">
-      <div className="text-4xl animate-bounce">
-        {error.includes('fome') || 
-         error.includes('Michelin') || 
-         error.includes('confundiu') ||
-         error.includes('oficina') ||
-         error.includes('técnico')
-          ? '👨‍🍳' 
-          : '⚠️'}
-      </div>
-      <div className="flex-1">
-        <p className={`font-bold text-lg mb-2 ${
-          error.includes('fome') || error.includes('Michelin')
-            ? 'text-orange-800'
-            : 'text-red-700'
-        }`}>
-          {error.split('\n\n')[0]}
-        </p>
-        {error.split('\n\n')[1] && (
-          <div className="bg-white rounded-lg p-3 mt-3 border-2 border-orange-200">
-            <p className="text-gray-700 text-sm">
-              {error.split('\n\n')[1]}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-            )}
+                <div className={`border-l-4 p-4 rounded-lg shadow-md ${
+                  error.includes('fome') || 
+                  error.includes('Michelin') || 
+                  error.includes('confundiu') ||
+                  error.includes('oficina') ||
+                  error.includes('técnico')
+                    ? 'bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-500'
+                    : 'bg-red-50 border-red-500'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    <div className="text-4xl animate-bounce">
+                      {error.includes('fome') || 
+                       error.includes('Michelin') || 
+                       error.includes('confundiu') ||
+                       error.includes('oficina') ||
+                       error.includes('técnico')
+                        ? '👨‍🍳' 
+                        : '⚠️'}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`font-bold text-lg mb-2 ${
+                        error.includes('fome') || error.includes('Michelin')
+                          ? 'text-orange-800'
+                          : 'text-red-700'
+                      }`}>
+                        {error.split('\n\n')[0]}
+                      </p>
+                      {error.split('\n\n')[1] && (
+                        <div className="bg-white rounded-lg p-3 mt-3 border-2 border-orange-200">
+                          <p className="text-gray-700 text-sm">
+                            {error.split('\n\n')[1]}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-4">
                 <div>
