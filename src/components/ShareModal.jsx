@@ -211,52 +211,34 @@ ${window.location.href}`;
 
           {/* Desktop: Grid de Ícones */}
           <div className="hidden md:block">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              📱 Redes Sociais
-            </h3>
-            <div className="grid grid-cols-4 gap-4 mb-6">
-              {shareOptions.slice(0, 4).map((option, idx) => (
-                <button
-                  key={idx}
-                  onClick={option.action}
-                  className={`${option.color} text-white rounded-xl p-6 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-2`}
-                >
-                  <span className="text-4xl">{option.icon}</span>
-                  <span className="text-sm font-semibold">{option.name}</span>
-                </button>
-              ))}
-            </div>
-
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              📤 Outras Opções
-            </h3>
             <div className="grid grid-cols-4 gap-4">
-              {shareOptions.slice(4).map((option, idx) => (
+              {shareOptions.map((option, idx) => (
                 <button
                   key={idx}
                   onClick={option.action}
-                  className={`${option.color} text-white rounded-xl p-6 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-2`}
+                  className={`${option.color} text-white rounded-2xl p-6 transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex flex-col items-center justify-center gap-3 aspect-square`}
                 >
-                  <span className="text-4xl">{option.icon}</span>
-                  <span className="text-sm font-semibold">{option.name}</span>
+                  <span className="text-5xl">{option.icon}</span>
+                  <span className="text-sm font-bold text-center leading-tight">{option.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Mobile: Lista com Ícones */}
-          <div className="md:hidden space-y-2">
-            {shareOptions.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={option.action}
-                className={`${option.color} text-white rounded-xl p-4 w-full transition-all transform active:scale-95 shadow-md flex items-center gap-4`}
-              >
-                <span className="text-3xl">{option.icon}</span>
-                <span className="text-lg font-semibold">{option.name}</span>
-                <span className="ml-auto text-xl">→</span>
-              </button>
-            ))}
+          {/* Mobile: Grid de Ícones (igual desktop) */}
+          <div className="md:hidden">
+            <div className="grid grid-cols-4 gap-3">
+              {shareOptions.map((option, idx) => (
+                <button
+                  key={idx}
+                  onClick={option.action}
+                  className={`${option.color} text-white rounded-2xl p-4 transition-all transform active:scale-95 shadow-lg flex flex-col items-center justify-center gap-2 aspect-square`}
+                >
+                  <span className="text-3xl">{option.icon}</span>
+                  <span className="text-xs font-semibold text-center leading-tight">{option.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
