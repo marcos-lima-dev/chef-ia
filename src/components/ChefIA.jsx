@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChefHat, Sparkles, Clock, Users, RefreshCw, Share2, Loader2 } from 'lucide-react';
 import { generateRecipeFromOllama } from '../services/ollamaService';
+import ShareModal from './ShareModal'; // ⚡ NOVO IMPORT
 
 const ChefIA = () => {
   const [ingredients, setIngredients] = useState('');
@@ -12,6 +13,7 @@ const ChefIA = () => {
   const [recipe, setRecipe] = useState(null);
   const [streamingText, setStreamingText] = useState('');
   const [error, setError] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false); // ⚡ NOVO ESTADO
 
   const dishes = [
     '🍝 Pasta Italiana',
@@ -104,54 +106,10 @@ const ChefIA = () => {
     setError('');
   };
 
+  // ⚡ NOVA FUNÇÃO DE COMPARTILHAMENTO
   const shareRecipe = () => {
     if (recipe) {
-      const text = `🍳 ${recipe.nome} ${recipe.emoji}\n⏱️ Tempo: ${recipe.tempoPreparo}\n👥 Rende: ${recipe.rendimento}\n📊 Dificuldade: ${recipe.dificuldade}\n\nCriado pelo Chef IA 🧑‍🍳`;
-      const url = window.location.href;
-      
-      const shareOptions = [
-        {
-          name: 'WhatsApp',
-          url: `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`
-        },
-        {
-          name: 'LinkedIn', 
-          url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
-        },
-        {
-          name: 'Facebook',
-          url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
-        },
-        {
-          name: 'Instagram',
-          action: 'copy'
-        },
-        {
-          name: 'X (Twitter)',
-          url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-        },
-        {
-          name: 'Copiar Link',
-          action: 'copy'
-        }
-      ];
-
-      const platform = prompt(
-        `Compartilhar receita:\n\n${shareOptions.map((opt, i) => `${i + 1}. ${opt.name}`).join('\n')}\n\nDigite o número da opção:`
-      );
-
-      const choice = parseInt(platform) - 1;
-      
-      if (choice >= 0 && choice < shareOptions.length) {
-        const option = shareOptions[choice];
-        
-        if (option.url) {
-          window.open(option.url, '_blank', 'width=600,height=400');
-        } else if (option.action === 'copy') {
-          navigator.clipboard.writeText(option.name === 'Instagram' ? text : url);
-          alert(`${option.name === 'Instagram' ? 'Texto da receita' : 'Link'} copiado! 📋`);
-        }
-      }
+      setShowShareModal(true);
     }
   };
 
@@ -236,7 +194,7 @@ const ChefIA = () => {
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all outline-none text-gray-700"
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Exemplo: <span className="text-orange-600">tomate, cebola, alho, macarrão, paprica defumada</span>
+                    Exemplo: <span className="text-orange-600">tomate, cebola, alho, macarrão, páprica defumada</span>
                   </p>
                 </div>
 
@@ -386,6 +344,13 @@ const ChefIA = () => {
           <p>💡 Powered by Ollama Cloud AI</p>
         </footer>
       </div>
+
+      {/* ⚡ MODAL DE COMPARTILHAMENTO */}
+      <ShareModal 
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        recipe={recipe}
+      />
     </div>
   );
 };
